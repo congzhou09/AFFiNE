@@ -547,12 +547,14 @@ function createOpenDocActionGroup(
       const block = ctx.getCurrentBlockByType(klass);
       if (!block) return null;
 
-      return renderOpenDocMenu(
-        settings,
-        ctx,
-        block,
-        block.model.props.pageId === ctx.store.id
-      );
+      const pageId = block.model.props.pageId;
+      const docMeta = ctx.workspace.meta.getDocMeta(pageId);
+      if (!docMeta || docMeta?.trash) {
+        // linked doc is deleted
+        return null;
+      }
+
+      return renderOpenDocMenu(settings, ctx, block, pageId === ctx.store.id);
     },
   };
 }

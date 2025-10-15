@@ -32,7 +32,8 @@ export class WorkspaceMetaImpl implements WorkspaceMeta {
       if (
         e.target === this.yDocs ||
         e.target.parent === this.yDocs ||
-        hasKey('pages')
+        hasKey('pages') ||
+        e.changes.keys.has('trash')
       ) {
         this._handleDocMetaEvent();
       }
@@ -119,10 +120,12 @@ export class WorkspaceMetaImpl implements WorkspaceMeta {
     const newDocs = new Set<string>();
 
     docMetas.forEach(docMeta => {
-      if (!_prevDocs.has(docMeta.id)) {
-        this.docMetaAdded.next(docMeta.id);
+      if (!docMeta?.trash) {
+        if (!_prevDocs.has(docMeta.id)) {
+          this.docMetaAdded.next(docMeta.id);
+        }
+        newDocs.add(docMeta.id);
       }
-      newDocs.add(docMeta.id);
     });
 
     _prevDocs.forEach(prevDocId => {

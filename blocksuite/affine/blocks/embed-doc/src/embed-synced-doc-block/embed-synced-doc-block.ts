@@ -357,10 +357,14 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
   };
 
   refreshData = () => {
-    this._load().catch(e => {
-      console.error(e);
-      this._error = true;
-    });
+    this._load()
+      .then(() => {
+        this._isEmptySyncedDoc = isEmptyDoc(this.syncedDoc, this.editorMode);
+      })
+      .catch(e => {
+        console.error(e);
+        this._error = true;
+      });
   };
 
   title$ = computed(() => {
@@ -521,6 +525,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
     this.disposables.add(
       this.store.workspace.slots.docListUpdated.subscribe(() => {
         this._setDocUpdatedAt();
+        this.refreshData();
       })
     );
 
